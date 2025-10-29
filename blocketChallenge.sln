@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "blocketChallenge", "blocketChallenge.csproj", "{577B3389-0EB5-9D9F-3EA3-897D943966E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{577B3389-0EB5-9D9F-3EA3-897D943966E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{577B3389-0EB5-9D9F-3EA3-897D943966E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{577B3389-0EB5-9D9F-3EA3-897D943966E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{577B3389-0EB5-9D9F-3EA3-897D943966E2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0EF07C67-E3AF-4B8A-A5A2-B8639CF39A83}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+@blocketChallenge_HostAddress = http://localhost:5033
+
+GET {{blocketChallenge_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
