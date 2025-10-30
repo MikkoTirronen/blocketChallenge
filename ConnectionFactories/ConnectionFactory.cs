@@ -2,7 +2,7 @@ namespace BlocketChallenge.ConnectionFactories;
 
 using System.Data;
 using Microsoft.Data.SqlClient;
-public class ConnectionFactory(string connectionString)
+public class DbConnectionFactory(string connectionString)
 {
     private readonly string _connectionString = connectionString;
 
