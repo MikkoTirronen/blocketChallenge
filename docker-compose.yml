@@ -10,10 +10,13 @@ services:
     ports:
       - "1433:1433"
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/1-init.sql
-      - ./db/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      # Mount your db scripts into the container
+      - ./db:/usr/config
+    command: >
+      bash -c "
+        /opt/mssql/bin/sqlservr &
+        sleep 25 &&
+        /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Super86Secret@' -i /usr/config/init.sql &&
+        /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Super86Secret@' -i /usr/config/seed.sql &&
+        wait
+      "
