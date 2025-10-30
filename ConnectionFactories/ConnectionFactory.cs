@@ -6,7 +6,8 @@ public class DbConnectionFactory(string connectionString)
 {
     private readonly string _connectionString = connectionString;
 
-    public IDbConnection CreateConnection()
+
+    public SqlConnection CreateConnection()
     {
         var connection = new SqlConnection(_connectionString);
         connection.Open();
