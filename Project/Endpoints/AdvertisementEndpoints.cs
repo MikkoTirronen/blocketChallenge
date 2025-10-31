@@ -9,18 +9,22 @@ public static class AdvertisementEndpoints
     {
         var group = routes.MapGroup("/api/ads").WithTags("Advertisements");
 
+
+        //GetAll Advertisements
         group.MapGet("/", (IAdvertisementService service) =>
         {
             var ads = service.GetAllAdvertisements();
             return Results.Ok(ads);
         });
 
+        //GetById Endpoint
         group.MapGet("/{id:int}", (int id, IAdvertisementService service) =>
         {
             var ad = service.GetAdvertisementById(id);
             return ad is not null ? Results.Ok(ad) : Results.NotFound();
         });
 
+        //Create Endpoint
         group.MapPost("/", (Advertisement ad, IAdvertisementService service) =>
         {
             try
@@ -34,6 +38,7 @@ public static class AdvertisementEndpoints
             }
         });
 
+        //Update Endpoint
         group.MapPut("/{id:int}", (int id, Advertisement ad, IAdvertisementService service) =>
         {
             if (id != ad.Id)
@@ -43,7 +48,27 @@ public static class AdvertisementEndpoints
 
             return Results.NoContent();
         });
-
         
+        //Delete Endpoint
+        group.MapDelete("/{id:int}", (int id, IAdvertisementService service) =>
+        {
+            service.Delete(id);
+            return Results.NoContent();
+        });
+
+        //Search Endpoint
+        group.MapGet("/search/{keyword}", (string keyword, IAdvertisementService service) =>
+        {
+            var results = service.Search(keyword);
+
+            return Results.Ok(results);
+        });
+
+        //GetCategoryById
+        group.MapGet("/category/{categoryId:int}", (int categoryId, IAdvertisementService service) =>
+        {
+            var results = service.GetByCategory(categoryId);
+            return Results.Ok(results);
+        });
     }
 }
