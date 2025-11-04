@@ -2,6 +2,7 @@ using BlocketChallenge.ConnectionFactories;
 using BlocketChallenge.Endpoints;
 using BlocketChallenge.Repositories;
 using BlocketChallenge.Services;
+using BlocketClallenge.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddSingleton(_ =>
 builder.Services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
 builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -24,5 +27,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapAdvertisementEndpoints();
-
+app.MapUserEndpoints();
 app.Run();
