@@ -63,7 +63,7 @@ public class UserRepository(DbConnectionFactory connectionFactory) : BaseReposit
         }
         return null;
     }
-    public void Update(User user)
+    public void UpdateUser(User user)
     {
         using var conn = _connectionFactory.CreateConnection();
         using var cmd = new SqlCommand(
@@ -77,7 +77,7 @@ public class UserRepository(DbConnectionFactory connectionFactory) : BaseReposit
 
         cmd.ExecuteNonQuery();
     }
-    public void Delete(int id)
+    public void DeleteUser(int id)
     {
         using var conn = _connectionFactory.CreateConnection();
         using var cmd = new SqlCommand("DELETE FROM Users WHERE ID=@Id", conn);
