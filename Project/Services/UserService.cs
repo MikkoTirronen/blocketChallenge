@@ -39,8 +39,11 @@ public class UserService(IUserRepository repository) : IUserService
         _repository.DeleteUser(id);
     }
 
-    public User? GetUserByUsername(string username)
+    public User? Authenticate(string username, string password)
     {
-        return _repository.GetUserByUsername(username);
+        var user = _repository.GetUserByUsername(username);
+
+        if (user == null) return null;
+        return user.VerifyPassword(password) ? user : null;
     }
 }

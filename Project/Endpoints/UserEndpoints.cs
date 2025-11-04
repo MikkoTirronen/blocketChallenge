@@ -1,5 +1,6 @@
 using BlocketChallenge.Models;
 using BlocketChallenge.Services;
+using Microsoft.AspNetCore.Identity.Data;
 
 namespace BlocketChallenge.Endpoints;
 
@@ -7,6 +8,8 @@ public static class UserEndpoints
 {
     public static void MapUserEndpoints(this IEndpointRouteBuilder routes)
     {
+
+
         var group = routes.MapGroup("/api/users").WithTags("Users");
 
         group.MapGet("/", (IUserService service) => Results.Ok(service.GetAllUsers()));
@@ -17,17 +20,34 @@ public static class UserEndpoints
             return user is not null ? Results.Ok(user) : Results.NotFound();
         });
 
-        group.MapPost("/", (User user, IUserService service) =>
+        group.MapPost("/register", (User user, IUserService service) =>
         {
             try
             {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
+                user.CreatedAt = DateTime.UtcNow;
+
                 service.CreateUser(user);
-                return Results.Created($"/api/user/user.Id", user);
+                return Results.Created($"/api/user/user.Id", new { user.Username, user.Email });
             }
             catch (ArgumentException ex)
             {
                 return Results.BadRequest(new { error = ex.Message });
             }
+        });
+
+        group.MapPost("/login", (LoginRequest request, IUserService service) =>
+        {
+            var user = service.Authenticate(request.Username, request.Password);
+            if (user is null)
+                return Results.Unauthorized();
+
+            return Results.Ok(new
+            {
+                Message = "Login successful",
+                user.Username,
+                user.Email
+            });
         });
 
         group.MapPut("/{id:int}", (int id, User user, IUserService service) =>
@@ -45,10 +65,7 @@ public static class UserEndpoints
             return Results.NoContent();
         });
 
-        group.MapGet("username/{username}", (string username, IUserService service) =>
-        {
-            var user = service.GetUserByUsername(username);
-            return user is not null ? Results.Ok(user) : Results.NotFound();
-        });
+
     }
 }
+public record LoginRequest(string Username, string Password);
