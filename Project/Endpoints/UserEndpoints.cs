@@ -47,7 +47,7 @@ public static class UserEndpoints
 
         group.MapGet("username/{username}", (string username, IUserService service) =>
         {
-            var user = service.GetByUsername(username);
+            var user = service.GetUserByUsername(username);
             return user is not null ? Results.Ok(user) : Results.NotFound();
         });
     }

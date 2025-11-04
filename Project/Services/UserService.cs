@@ -3,11 +3,11 @@ using BlocketClallenge.Repositories;
 
 namespace BlocketChallenge.Services;
 
-public class UserService(IUserRepository repository)
+public class UserService(IUserRepository repository) : IUserService
 {
     public readonly IUserRepository _repository = repository;
 
-    public IEnumerable<User> GetAllUsers => _repository.GetAllUsers();
+    public IEnumerable<User> GetAllUsers() => _repository.GetAllUsers();
 
     public User? GetUserById(int id) => _repository.GetUserById(id);
 

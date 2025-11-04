@@ -7,5 +7,5 @@ public interface IUserService
     void UpdateUser(User user);
     void DeleteUser(int id);
 
-    User? GetByUsername(string username);
+    User? GetUserByUsername(string username);
 }
