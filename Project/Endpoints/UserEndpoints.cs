@@ -36,15 +36,18 @@ public static class UserEndpoints
             }
         });
 
-        group.MapPost("/login", (LoginRequest request, IUserService service) =>
+        group.MapPost("/login", (LoginRequest request, IUserService service, IJwtTokenService jwt) =>
         {
             var user = service.Authenticate(request.Username, request.Password);
             if (user is null)
                 return Results.Unauthorized();
 
+            var token = jwt.GenerateToken(user);
+
             return Results.Ok(new
             {
                 Message = "Login successful",
+                Token = token,
                 user.Username,
                 user.Email
             });
