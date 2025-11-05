@@ -1,6 +1,3 @@
-//- Följande information skall kunna registreras och sparas i databasen för en annons, titel,
-//beskrivning, pris och kategori (typ av annons). 
-
 
 namespace BlocketChallenge.Models;
 
@@ -14,7 +11,7 @@ public class Advertisement
     public int SellerId { get; set; }
     public int CategoryId { get; set; }
     public DateTime CreatedAt { get; set; }
-
+    public string? ImageUrl { get; set; }
     public  required User Seller { get; set; }
     public required Category Category { get; set; }
 

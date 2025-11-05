@@ -1,6 +1,7 @@
 using BlocketChallenge.Models;
 using BlocketChallenge.Repositories;
 using BlocketChallenge.Services;
+using BlocketChallenge.Services.DTOs;
 
 namespace BlocketChallenge.Services;
 
@@ -8,7 +9,21 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
 {
     private readonly IAdvertisementRepository _repository = repository;
 
-    public IEnumerable<Advertisement> GetAllAdvertisements() => _repository.GetAll();
+    public IEnumerable<AdvertisementDTO> GetAllAdvertisements()
+    {
+        var ads = _repository.GetAll();
+        return ads.Select(ad => new AdvertisementDTO
+        {
+            Id = ad.Id,
+            Title = ad.Title,
+            Description = ad.Description,
+            Price = ad.Price,
+            SellerName = ad.Seller.Username,
+            CategoryName = ad.Category.Name,
+            CreatedAt = ad.CreatedAt,
+            ImageUrl = ad.ImageUrl
+        });
+    }
 
     public Advertisement? GetAdvertisementById(int id) => _repository.GetAdvertisementById(id);
 
@@ -49,5 +64,10 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
     public IEnumerable<Advertisement> GetByCategory(int categoryId)
     {
         return _repository.GetAll().Where(ad => ad.CategoryId == categoryId);
+    }
+
+    IEnumerable<Advertisement> IAdvertisementService.GetAllAdvertisements()
+    {
+        throw new NotImplementedException();
     }
 }
