@@ -33,6 +33,15 @@ builder.Services.AddSingleton(_ =>
     new DbConnectionFactory(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVite",
+        policy => policy
+            .WithOrigins("http://localhost:5173") // Vite dev server
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IAdvertisementRepository, AdvertisementRepository>();
 builder.Services.AddScoped<IAdvertisementService, AdvertisementService>();
@@ -43,9 +52,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("AllowVite");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
