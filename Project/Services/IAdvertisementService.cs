@@ -1,10 +1,12 @@
 using BlocketChallenge.Models;
+using BlocketChallenge.Services.DTOs;
+
 namespace BlocketChallenge.Services;
 
 public interface IAdvertisementService
 {
-    IEnumerable<Advertisement> GetAllAdvertisements();
-    Advertisement? GetAdvertisementById(int id);
+    IEnumerable<AdvertisementDTO> GetAllAdvertisements();
+    AdvertisementDTO? GetAdvertisementById(int id);
 
     void Create(Advertisement ad);
     void Update(Advertisement ad);
