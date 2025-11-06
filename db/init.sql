@@ -34,6 +34,7 @@ CREATE TABLE Advertisements (
     SellerId INT NOT NULL,
     CategoryId INT NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
+    ImageUrl NVARCHAR(100),
     FOREIGN KEY (SellerId) REFERENCES Users(Id),
     FOREIGN KEY (CategoryId) REFERENCES Categories(Id)
 );
