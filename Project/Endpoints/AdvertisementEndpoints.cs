@@ -30,7 +30,7 @@ public static class AdvertisementEndpoints
         });
 
         //Create
-        group.MapPost("/", (AdvertisementCreateDto dto, IAdvertisementService service, ClaimsPrincipal user) =>
+        group.MapPost("/", [Authorize] (AdvertisementCreateDto dto, IAdvertisementService service, ClaimsPrincipal user) =>
 {
     try
     {
@@ -122,5 +122,30 @@ public static class AdvertisementEndpoints
             var results = service.GetByCategory(categoryId);
             return Results.Ok(results);
         });
+
+        //GetByUser
+        group.MapGet("/my-ads", (IAdvertisementService service, ClaimsPrincipal user) =>
+{
+    try
+    {
+        var userId = user.GetUserID();
+        if (userId is null)
+        {
+            Log.Warning("Unauthorized access attempt to /my-ads");
+            return Results.Unauthorized();
+        }
+
+        var ads = service.GetByUserId(userId.Value);
+
+        Log.Information("Fetched {Count} ads for user {UserId}", ads.Count(), userId);
+        return Results.Ok(ads);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Error fetching user's advertisements");
+        return Results.Problem("Failed to fetch advertisements");
+    }
+});
+
     }
 }

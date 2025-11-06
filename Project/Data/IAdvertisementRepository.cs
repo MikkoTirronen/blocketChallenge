@@ -9,4 +9,6 @@ public interface IAdvertisementRepository
     void Create(Advertisement ad);
     void Update(Advertisement ad);
     void Delete(int id);
+
+    IEnumerable<Advertisement> GetByUserId(int sellerId);
 }

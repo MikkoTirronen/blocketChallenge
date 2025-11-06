@@ -14,4 +14,5 @@ public interface IAdvertisementService
 
     IEnumerable<Advertisement> Search(string keyword);
     IEnumerable<Advertisement> GetByCategory(int categoryId);
+    IEnumerable<Advertisement> GetByUserId(int sellerId);
 }

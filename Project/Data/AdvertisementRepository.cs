@@ -199,5 +199,52 @@ namespace BlocketChallenge.Repositories
             cmd.Parameters.AddWithValue("@Id", id);
             cmd.ExecuteNonQuery();
         }
+
+        public IEnumerable<Advertisement> GetByUserId(int sellerId)
+        {
+            var ads = new List<Advertisement>();
+
+            using var connection = _connectionFactory.CreateConnection();
+
+
+            var command = new SqlCommand(@"
+        SELECT a.Id, a.Title, a.Description, a.Price, a.CreatedAt,
+               a.ImageUrl, a.CategoryId, c.Name AS CategoryName,
+               a.SellerId, u.Username AS SellerName
+        FROM Advertisements a
+        INNER JOIN Categories c ON a.CategoryId = c.Id
+        INNER JOIN Users u ON a.SellerId = u.Id
+        WHERE a.SellerId = @SellerId", connection);
+
+            command.Parameters.AddWithValue("@SellerId", sellerId);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                ads.Add(new Advertisement
+                {
+                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                    Title = reader.GetString(reader.GetOrdinal("Title")),
+                    Description = reader["Description"] as string,
+                    Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                    CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                    ImageUrl = reader["ImageUrl"] as string,
+                    CategoryId = reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                    SellerId = reader.GetInt32(reader.GetOrdinal("SellerId")),
+                    Category = new Category
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("CategoryId")),
+                        Name = reader.GetString(reader.GetOrdinal("CategoryName"))
+                    },
+                    Seller = new User
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("SellerId")),
+                        Username = reader.GetString(reader.GetOrdinal("SellerName"))
+                    }
+                });
+            }
+
+            return ads;
+        }
     }
 }

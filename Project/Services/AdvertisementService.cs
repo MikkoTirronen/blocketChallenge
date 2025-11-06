@@ -82,5 +82,8 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
         return _repository.GetAll().Where(ad => ad.CategoryId == categoryId);
     }
 
-
+    public IEnumerable<Advertisement> GetByUserId(int sellerId)
+    {
+        return _repository.GetByUserId(sellerId);
+    }
 }
