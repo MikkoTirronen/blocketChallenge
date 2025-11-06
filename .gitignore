@@ -4,7 +4,7 @@ obj/
 out/
 [Bb]uild/
 [Ll]og/
-
+Logs/
 ## User-specific files
 *.user
 *.rsuser

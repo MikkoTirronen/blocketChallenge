@@ -3,14 +3,17 @@ using BlocketChallenge.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using BlocketChallenge.Helpers;
+using Microsoft.OpenApi.Services;
+using Serilog;
+using BlocketChallenge.Services.DTOs;
 namespace BlocketChallenge.Endpoints;
 
+public class AdvertisementEndpointsLogger { }
 public static class AdvertisementEndpoints
 {
     public static void MapAdvertisementEndpoints(this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/api/ads").WithTags("Advertisements");
-
 
         //GetAll Advertisements
         group.MapGet("/", (IAdvertisementService service) =>
@@ -19,29 +22,53 @@ public static class AdvertisementEndpoints
             return Results.Ok(ads);
         });
 
-        //GetById Endpoint
+        //GetById
         group.MapGet("/{id:int}", (int id, IAdvertisementService service) =>
         {
             var ad = service.GetAdvertisementById(id);
             return ad is not null ? Results.Ok(ad) : Results.NotFound();
         });
 
-        //Protected: Create Endpoint
-        group.MapPost("/", [Authorize] (Advertisement ad, IAdvertisementService service, ClaimsPrincipal user) =>
-        {
-            try
-            {
-                var userId = user.GetUserID();
-                if (userId is null) return Results.Unauthorized();
+        //Create
+        group.MapPost("/", (AdvertisementCreateDto dto, IAdvertisementService service, ClaimsPrincipal user) =>
+{
+    try
+    {
 
-                service.Create(ad);
-                return Results.Created($"/api/ads/{ad.Id}", ad);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(new { error = ex.Message });
-            }
-        });
+        foreach (var claim in user.Claims)
+        {
+            Log.Information("Claim type: {ClaimType}, Claim value: {ClaimValue}", claim.Type, claim.Value);
+        }
+
+
+        var userIdClaim = user.GetUserID();
+        if (userIdClaim == null)
+        {
+            Log.Warning("No user ID found in claims.");
+            return Results.Unauthorized();
+        }
+        var ad = new Advertisement
+        {
+            Title = dto.Title,
+            Description = dto.Description,
+            Price = dto.Price,
+            CategoryId = dto.CategoryId,
+            SellerId = userIdClaim.Value,
+        };
+        Log.Information($"Creating ad with CategoryId={ad.CategoryId}, SellerId={ad.SellerId}", dto.CategoryId, userIdClaim);
+
+        service.Create(ad);
+
+        Log.Information("Advertisement created successfully: {@Ad}", ad);
+        return Results.Created($"/api/ads/{ad.Id}", ad);
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Error creating advertisement");
+        return Results.BadRequest(new { error = ex.Message });
+    }
+});
+
 
         //Protected: Update Endpoint
         group.MapPut("/{id:int}", [Authorize] (int id, Advertisement UpdatedAd, IAdvertisementService service, ClaimsPrincipal user) =>
@@ -73,7 +100,7 @@ public static class AdvertisementEndpoints
             var ad = service.GetAdvertisementById(id);
             if (ad is null) return Results.NotFound();
 
-            
+
             if (ad.SellerId != userId.Value)
                 return Results.Forbid();
 

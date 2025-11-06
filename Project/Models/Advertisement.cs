@@ -12,8 +12,8 @@ public class Advertisement
     public int CategoryId { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? ImageUrl { get; set; }
-    public  required User Seller { get; set; }
-    public required Category Category { get; set; }
+    public User? Seller { get; set; }
+    public Category? Category { get; set; }
 
     public string GetSummary() => $"{Title} - {Price:C}";
 }
