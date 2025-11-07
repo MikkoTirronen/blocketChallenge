@@ -54,8 +54,9 @@ public static class AdvertisementEndpoints
             Price = dto.Price,
             CategoryId = dto.CategoryId,
             SellerId = userIdClaim.Value,
+            ImageUrl = dto.ImageUrl,
         };
-        Log.Information($"Creating ad with CategoryId={ad.CategoryId}, SellerId={ad.SellerId}", dto.CategoryId, userIdClaim);
+        Log.Information($"Creating ad with CategoryId={ad.CategoryId}, SellerId={ad.SellerId}", dto.CategoryId, userIdClaim, dto.ImageUrl);
 
         service.Create(ad);
 
@@ -73,18 +74,20 @@ public static class AdvertisementEndpoints
         //Protected: Update Endpoint
         group.MapPut("/{id:int}", [Authorize] (int id, Advertisement UpdatedAd, IAdvertisementService service, ClaimsPrincipal user) =>
         {
+            Log.Warning("Received PUT /api/ads/{Id} with body: {@UpdatedAd}", id, UpdatedAd);
+
             var userId = user.GetUserID();
             if (userId is null) return Results.Unauthorized();
 
-            if (id != UpdatedAd.Id)
-                return Results.BadRequest("Advertisement Id doesnt match.");
+            // if (id != UpdatedAd.Id)
+            //     return Results.BadRequest("Advertisement Id doesnt match.");
 
             var existingAd = service.GetAdvertisementById(id);
             if (existingAd is null) return Results.NotFound();
 
             if (existingAd.SellerId != userId.Value)
                 return Results.Forbid();
-
+            UpdatedAd.Id = id;
             service.Update(UpdatedAd);
 
             return Results.NoContent();
@@ -116,6 +119,12 @@ public static class AdvertisementEndpoints
             return Results.Ok(results);
         });
 
+        // GET /api/categories
+        group.MapGet("/categories", (ICategoryService service) =>
+        {
+            var categories = service.GetAll();
+            return Results.Ok(categories);
+        });
         //GetCategoryById
         group.MapGet("/category/{categoryId:int}", (int categoryId, IAdvertisementService service) =>
         {

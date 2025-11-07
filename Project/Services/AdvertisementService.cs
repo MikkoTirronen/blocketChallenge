@@ -17,10 +17,11 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
             Title = ad.Title,
             Description = ad.Description,
             Price = ad.Price,
+            ImageUrl = ad.ImageUrl,
             SellerName = ad.Seller.Username,
+            SellerId = ad.Seller.Id,
             CategoryName = ad.Category.Name,
             CreatedAt = ad.CreatedAt,
-            ImageUrl = ad.ImageUrl
         });
     }
 

@@ -25,6 +25,7 @@ namespace BlocketChallenge.Repositories
                     a.Title,
                     a.Description,
                     a.Price,
+                    a.ImageUrl As AdImageUrl,
                     a.SellerId AS AdSellerId,
                     a.CategoryId AS AdCategoryId,
                     a.CreatedAt AS AdCreatedAt,
@@ -48,10 +49,10 @@ namespace BlocketChallenge.Repositories
             var titleOrd = reader.GetOrdinal("Title");
             var descOrd = reader.GetOrdinal("Description");
             var priceOrd = reader.GetOrdinal("Price");
+            var adImageUrl = reader.GetOrdinal("AdImageUrl");
             var adSellerIdOrd = reader.GetOrdinal("AdSellerId");
             var adCategoryIdOrd = reader.GetOrdinal("AdCategoryId");
             var adCreatedAtOrd = reader.GetOrdinal("AdCreatedAt");
-
             var userIdOrd = reader.GetOrdinal("UserId");
             var userUsernameOrd = reader.GetOrdinal("UserUsername");
             var userEmailOrd = reader.GetOrdinal("UserEmail");
@@ -68,10 +69,10 @@ namespace BlocketChallenge.Repositories
                     Title = reader.GetString(titleOrd),
                     Description = reader.IsDBNull(descOrd) ? null : reader.GetString(descOrd),
                     Price = reader.GetDecimal(priceOrd),
+                    ImageUrl = reader.GetString(adImageUrl),
                     SellerId = reader.GetInt32(adSellerIdOrd),
                     CategoryId = reader.GetInt32(adCategoryIdOrd),
                     CreatedAt = reader.GetDateTime(adCreatedAtOrd),
-
                     Seller = new User
                     {
                         Id = reader.GetInt32(userIdOrd),
@@ -104,6 +105,7 @@ namespace BlocketChallenge.Repositories
                     a.SellerId AS AdSellerId,
                     a.CategoryId AS AdCategoryId,
                     a.CreatedAt AS AdCreatedAt,
+                    a.ImageUrl As AdImageUrl,
                     u.Id       AS UserId,
                     u.Username AS UserUsername,
                     u.Email    AS UserEmail,
@@ -128,6 +130,7 @@ namespace BlocketChallenge.Repositories
                 Title = reader.GetString(reader.GetOrdinal("Title")),
                 Description = reader.IsDBNull(reader.GetOrdinal("Description")) ? null : reader.GetString(reader.GetOrdinal("Description")),
                 Price = reader.GetDecimal(reader.GetOrdinal("Price")),
+                ImageUrl = reader.GetString(reader.GetOrdinal("AdImageUrl")),
                 SellerId = reader.GetInt32(reader.GetOrdinal("AdSellerId")),
                 CategoryId = reader.GetInt32(reader.GetOrdinal("AdCategoryId")),
                 CreatedAt = reader.GetDateTime(reader.GetOrdinal("AdCreatedAt")),
@@ -151,8 +154,8 @@ namespace BlocketChallenge.Repositories
         public void Create(Advertisement ad)
         {
             const string sql = @"
-                INSERT INTO Advertisements (Title, Description, Price, SellerId, CategoryId, CreatedAt)
-                VALUES (@Title, @Description, @Price, @SellerId, @CategoryId, @CreatedAt);";
+                INSERT INTO Advertisements (Title, Description, Price, ImageUrl, SellerId, CategoryId, CreatedAt)
+                VALUES (@Title, @Description, @Price, @ImageUrl, @SellerId, @CategoryId, @CreatedAt);";
 
             using var conn = _connectionFactory.CreateConnection();
             using var cmd = new SqlCommand(sql, conn);
@@ -160,6 +163,7 @@ namespace BlocketChallenge.Repositories
             cmd.Parameters.AddWithValue("@Title", ad.Title ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Description", ad.Description ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Price", ad.Price);
+            cmd.Parameters.AddWithValue("@ImageUrl", ad.ImageUrl);
             cmd.Parameters.AddWithValue("@SellerId", ad.SellerId);
             cmd.Parameters.AddWithValue("@CategoryId", ad.CategoryId);
             cmd.Parameters.AddWithValue("@CreatedAt", ad.CreatedAt == default ? DateTime.Now : ad.CreatedAt);
@@ -174,7 +178,7 @@ namespace BlocketChallenge.Repositories
                 SET Title = @Title,
                     Description = @Description,
                     Price = @Price,
-                    SellerId = @SellerId,
+                    ImageUrl = @ImageUrl,
                     CategoryId = @CategoryId
                 WHERE Id = @Id;";
 
@@ -184,7 +188,7 @@ namespace BlocketChallenge.Repositories
             cmd.Parameters.AddWithValue("@Title", ad.Title ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Description", ad.Description ?? (object)DBNull.Value);
             cmd.Parameters.AddWithValue("@Price", ad.Price);
-            cmd.Parameters.AddWithValue("@SellerId", ad.SellerId);
+            cmd.Parameters.AddWithValue("@ImageUrl", ad.ImageUrl);
             cmd.Parameters.AddWithValue("@CategoryId", ad.CategoryId);
             cmd.Parameters.AddWithValue("@Id", ad.Id);
 
@@ -208,8 +212,8 @@ namespace BlocketChallenge.Repositories
 
 
             var command = new SqlCommand(@"
-        SELECT a.Id, a.Title, a.Description, a.Price, a.CreatedAt,
-               a.ImageUrl, a.CategoryId, c.Name AS CategoryName,
+        SELECT a.Id, a.Title, a.Description, a.Price, a.ImageUrl, a.CreatedAt,
+                a.CategoryId, c.Name AS CategoryName,
                a.SellerId, u.Username AS SellerName
         FROM Advertisements a
         INNER JOIN Categories c ON a.CategoryId = c.Id
@@ -227,8 +231,8 @@ namespace BlocketChallenge.Repositories
                     Title = reader.GetString(reader.GetOrdinal("Title")),
                     Description = reader["Description"] as string,
                     Price = reader.GetDecimal(reader.GetOrdinal("Price")),
-                    CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                     ImageUrl = reader["ImageUrl"] as string,
+                    CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
                     CategoryId = reader.GetInt32(reader.GetOrdinal("CategoryId")),
                     SellerId = reader.GetInt32(reader.GetOrdinal("SellerId")),
                     Category = new Category
