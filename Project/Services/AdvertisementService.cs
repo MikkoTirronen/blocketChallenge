@@ -68,14 +68,31 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
         _repository.Delete(id);
     }
 
-    public IEnumerable<Advertisement> Search(string keyword)
+    public IEnumerable<AdvertisementDTO> Search(string keyword)
     {
         if (string.IsNullOrWhiteSpace(keyword))
-            return [];
+            return Enumerable.Empty<AdvertisementDTO>();
 
-        return _repository.GetAll()
-            .Where(ad => ad.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase)
-            || ad.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        var results = _repository.GetAll()
+            .Where(ad =>
+                ad.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                (ad.Description != null && ad.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                (ad.Category != null && ad.Category.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                (ad.Seller != null && ad.Seller.Username.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+            );
+
+        // Map to DTOs
+        return results.Select(ad => new AdvertisementDTO
+        {
+            Id = ad.Id,
+            Title = ad.Title,
+            Description = ad.Description,
+            Price = ad.Price,
+            ImageUrl = ad.ImageUrl,
+            CategoryName = ad.Category?.Name ?? "Unknown",
+            SellerName = ad.Seller?.Username ?? "Unknown",
+            CreatedAt = ad.CreatedAt
+        }).ToList();
     }
 
     public IEnumerable<Advertisement> GetByCategory(int categoryId)

@@ -12,7 +12,7 @@ public interface IAdvertisementService
     void Update(Advertisement ad);
     void Delete(int id);
 
-    IEnumerable<Advertisement> Search(string keyword);
+    IEnumerable<AdvertisementDTO> Search(string keyword);
     IEnumerable<Advertisement> GetByCategory(int categoryId);
     IEnumerable<Advertisement> GetByUserId(int sellerId);
 }
