@@ -1,16 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using BlocketChallenge.Models;
+using BlocketChallenge.Project.Core.Interfaces;
+using BlocketChallenge.Project.Domain.Models;
 
 namespace BlocketChallenge.Services;
 
-public interface IJwtTokenService
-{
-    string GenerateToken(User user);
-}
+
 
 public class JwtTokenService(IConfiguration config) : IJwtTokenService
 {
@@ -45,6 +42,7 @@ public class JwtTokenService(IConfiguration config) : IJwtTokenService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
 }
 
 

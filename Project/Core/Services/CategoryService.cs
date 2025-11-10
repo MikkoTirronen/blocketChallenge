@@ -1,9 +1,9 @@
-using BlocketChallenge.Models;
+using BlocketChallenge.Project.Core.Interfaces;
+using BlocketChallenge.Project.Data.Interfaces;
+using BlocketChallenge.Project.Domain.Models;
 
-public interface ICategoryService
-{
-    IEnumerable<Category> GetAll();
-}
+
+
 
 public class CategoryService : ICategoryService
 {

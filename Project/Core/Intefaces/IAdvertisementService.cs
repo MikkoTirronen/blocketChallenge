@@ -1,11 +1,11 @@
-using BlocketChallenge.Models;
-using BlocketChallenge.Services.DTOs;
+using BlocketChallenge.Project.Domain.DTOs;
+using BlocketChallenge.Project.Domain.Models;
 
-namespace BlocketChallenge.Services;
+namespace BlocketChallenge.Project.Core.Interfaces;
 
 public interface IAdvertisementService
 {
-    IEnumerable<AdvertisementDTO> GetAllAdvertisements();
+    IEnumerable<AdvertisementDTO> GetAllAdvertisements(string? search, string? sort, string? order);
     AdvertisementDTO? GetAdvertisementById(int id);
 
     void Create(Advertisement ad);

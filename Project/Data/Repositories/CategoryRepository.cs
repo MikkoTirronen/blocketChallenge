@@ -1,12 +1,10 @@
-using BlocketChallenge.ConnectionFactories;
-using BlocketChallenge.Models;
+using BlocketChallenge.Project.ConnectionFactories;
+using BlocketChallenge.Project.Data.Interfaces;
 using Microsoft.Data.SqlClient;
+using BlocketChallenge.Project.Domain.Models;
 
-public interface ICategoryRepository
-{
-    IEnumerable<Category> GetAll();
-}
 
+namespace BlocketChallenge.Project.Data.Repositories;
 public class CategoryRepository(DbConnectionFactory connectionFactory) : ICategoryRepository
 {
     private readonly DbConnectionFactory _connectionFactory = connectionFactory;

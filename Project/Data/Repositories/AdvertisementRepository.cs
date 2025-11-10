@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
-using BlocketChallenge.ConnectionFactories;
-using BlocketChallenge.Models;
+using BlocketChallenge.Project.ConnectionFactories;
+using BlocketChallenge.Project.Data.Interfaces;
+using BlocketChallenge.Project.Domain.Models;
 
-namespace BlocketChallenge.Repositories
+namespace BlocketChallenge.Project.Data.Repositories
 {
     public class AdvertisementRepository : IAdvertisementRepository
     {

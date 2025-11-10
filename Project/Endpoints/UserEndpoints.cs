@@ -1,6 +1,5 @@
-using BlocketChallenge.Models;
-using BlocketChallenge.Services;
-using Microsoft.AspNetCore.Identity.Data;
+using BlocketChallenge.Project.Core.Interfaces;
+using BlocketChallenge.Project.Domain.Models;
 
 namespace BlocketChallenge.Endpoints;
 

@@ -1,6 +1,5 @@
-namespace BlocketChallenge.ConnectionFactories;
+namespace BlocketChallenge.Project.ConnectionFactories;
 
-using System.Data;
 using Microsoft.Data.SqlClient;
 public class DbConnectionFactory(string connectionString)
 {

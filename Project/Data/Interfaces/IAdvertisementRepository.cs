@@ -1,6 +1,6 @@
-using BlocketChallenge.Models;
+using BlocketChallenge.Project.Domain.Models;
 
-namespace BlocketChallenge.Repositories;
+namespace BlocketChallenge.Project.Data.Interfaces;
 
 public interface IAdvertisementRepository
 {

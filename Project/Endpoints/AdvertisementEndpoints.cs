@@ -1,11 +1,10 @@
-using BlocketChallenge.Models;
-using BlocketChallenge.Services;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using BlocketChallenge.Helpers;
-using Microsoft.OpenApi.Services;
 using Serilog;
-using BlocketChallenge.Services.DTOs;
+using BlocketChallenge.Project.Core.Interfaces;
+using BlocketChallenge.Project.Domain.DTOs;
+using BlocketChallenge.Project.Domain.Models;
 namespace BlocketChallenge.Endpoints;
 
 public class AdvertisementEndpointsLogger { }
@@ -16,10 +15,10 @@ public static class AdvertisementEndpoints
         var group = routes.MapGroup("/api/ads").WithTags("Advertisements");
 
         //GetAll Advertisements
-        group.MapGet("/", (IAdvertisementService service) =>
+        group.MapGet("/", (string? search, string? sort, string? order, IAdvertisementService service) =>
         {
-            var ads = service.GetAllAdvertisements();
-            return Results.Ok(ads);
+            var result = service.GetAllAdvertisements(search, sort, order);
+            return Results.Ok(result);
         });
 
         //GetById

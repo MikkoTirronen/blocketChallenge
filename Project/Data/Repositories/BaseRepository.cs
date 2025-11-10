@@ -1,7 +1,7 @@
 using System.Data;
-using BlocketChallenge.ConnectionFactories;
+using BlocketChallenge.Project.ConnectionFactories;
 using Microsoft.Data.SqlClient;
-namespace BlocketChallenge.Repositories;
+namespace BlocketChallenge.Project.Data.Repositories;
 
 
 public abstract class BaseRepository(DbConnectionFactory connectionFactory)

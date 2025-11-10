@@ -1,4 +1,8 @@
-using BlocketChallenge.Models;
+
+
+using BlocketChallenge.Project.Domain.Models;
+
+namespace BlocketChallenge.Project.Core.Interfaces;
 public interface IUserService
 {
     IEnumerable<User> GetAllUsers();

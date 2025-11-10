@@ -1,4 +1,4 @@
-namespace BlocketChallenge.Services.DTOs;
+namespace BlocketChallenge.Project.Domain.DTOs;
 
 public class AdvertisementDTO
 {

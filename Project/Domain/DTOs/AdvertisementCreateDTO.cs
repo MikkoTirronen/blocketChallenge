@@ -1,3 +1,5 @@
+
+namespace BlocketChallenge.Project.Domain.DTOs;
 public class AdvertisementCreateDto
 {
     public required string Title { get; set; }

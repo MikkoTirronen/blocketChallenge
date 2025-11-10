@@ -1,9 +1,9 @@
-using BlocketChallenge.ConnectionFactories;
-using BlocketChallenge.Models;
-using BlocketClallenge.Repositories;
+using BlocketChallenge.Project.ConnectionFactories;
+using BlocketClallenge.Project.Data.Interfaces;
 using Microsoft.Data.SqlClient;
+using BlocketChallenge.Project.Domain.Models;
 
-namespace BlocketChallenge.Repositories;
+namespace BlocketChallenge.Project.Data.Repositories;
 
 public class UserRepository(DbConnectionFactory connectionFactory) : BaseRepository(connectionFactory), IUserRepository
 {

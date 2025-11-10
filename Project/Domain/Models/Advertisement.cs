@@ -1,5 +1,5 @@
 
-namespace BlocketChallenge.Models;
+namespace BlocketChallenge.Project.Domain.Models;
 
 public class Advertisement
 {

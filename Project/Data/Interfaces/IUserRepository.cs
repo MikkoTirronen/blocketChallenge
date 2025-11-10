@@ -1,6 +1,6 @@
-using BlocketChallenge.Models;
+using BlocketChallenge.Project.Domain.Models;
 
-namespace BlocketClallenge.Repositories;
+namespace BlocketClallenge.Project.Data.Interfaces;
 
 public interface IUserRepository
 {
