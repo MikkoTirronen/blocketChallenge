@@ -1,9 +1,12 @@
 using System.Text;
-using BlocketChallenge.ConnectionFactories;
 using BlocketChallenge.Endpoints;
-using BlocketChallenge.Repositories;
+using BlocketChallenge.Project.ConnectionFactories;
+using BlocketChallenge.Project.Core.Interfaces;
+using BlocketChallenge.Project.Core.Services;
+using BlocketChallenge.Project.Data.Interfaces;
+using BlocketChallenge.Project.Data.Repositories;
 using BlocketChallenge.Services;
-using BlocketClallenge.Repositories;
+using BlocketClallenge.Project.Data.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -39,8 +42,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton(_ =>
-    new DbConnectionFactory(builder.Configuration.GetConnectionString("DefaultConnection"))
+    new DbConnectionFactory(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new ArgumentNullException("DefaultConnection", "Database connection string is missing from configuration.")
+    )
 );
+
 
 builder.Services.AddCors(options =>
 {

@@ -5,14 +5,9 @@ using BlocketChallenge.Project.Domain.Models;
 
 namespace BlocketChallenge.Project.Data.Repositories
 {
-    public class AdvertisementRepository : IAdvertisementRepository
+    public class AdvertisementRepository(DbConnectionFactory connectionFactory) : IAdvertisementRepository
     {
-        private readonly DbConnectionFactory _connectionFactory;
-
-        public AdvertisementRepository(DbConnectionFactory connectionFactory)
-        {
-            _connectionFactory = connectionFactory;
-        }
+        private readonly DbConnectionFactory _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 
         public IEnumerable<Advertisement> GetAll()
         {

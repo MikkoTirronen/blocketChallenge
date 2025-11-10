@@ -6,7 +6,7 @@ namespace BlocketChallenge.Project.Data.Repositories;
 
 public abstract class BaseRepository(DbConnectionFactory connectionFactory)
 {
-    protected readonly DbConnectionFactory? _connectionFactory = connectionFactory;
+    protected readonly DbConnectionFactory _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
 
     protected int ExecuteNonQuery(string sql, params SqlParameter[] parameters)
     {
@@ -30,7 +30,7 @@ public abstract class BaseRepository(DbConnectionFactory connectionFactory)
         cmd.CommandText = sql;
         if (parameters != null)
         {
-            foreach(var param in parameters)
+            foreach (var param in parameters)
             {
                 cmd.Parameters.Add(param);
             }

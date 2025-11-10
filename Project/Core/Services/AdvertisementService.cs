@@ -10,45 +10,46 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
     private readonly IAdvertisementRepository _repository = repository;
 
     public IEnumerable<AdvertisementDTO> GetAllAdvertisements(string? search, string? sort, string? order)
-{
-    var ads = _repository.GetAll();
-
-    // 🔍 Optional search
-    if (!string.IsNullOrWhiteSpace(search))
     {
-        ads = ads.Where(ad =>
-            ad.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-            ad.Description.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-            (ad.Category.Name?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-        );
+        var ads = _repository.GetAll();
+
+        // 🔍 Optional search
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            ads = ads.Where(ad =>
+                (ad.Title?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (ad.Description?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                (ad.Category?.Name?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
+            );
+
+        }
+
+        // 🧭 Optional sorting
+        ads = (sort?.ToLower(), order?.ToLower()) switch
+        {
+            ("price", "asc") => ads.OrderBy(a => a.Price),
+            ("price", "desc") => ads.OrderByDescending(a => a.Price),
+            ("date", "asc") => ads.OrderBy(a => a.CreatedAt),
+            ("date", "desc") => ads.OrderByDescending(a => a.CreatedAt),
+            _ => ads.OrderByDescending(a => a.CreatedAt) // Default sort by newest
+        };
+
+        // 🎯 Map to DTOs *after* filtering/sorting
+        var dtos = ads.Select(ad => new AdvertisementDTO
+        {
+            Id = ad.Id,
+            Title = ad.Title,
+            Description = ad.Description,
+            Price = ad.Price,
+            ImageUrl = ad.ImageUrl,
+            SellerName = ad.Seller?.Username ?? string.Empty,
+            SellerId = ad.Seller?.Id ?? 0,
+            CategoryName = ad.Category?.Name ?? string.Empty,
+            CreatedAt = ad.CreatedAt,
+        });
+
+        return dtos;
     }
-
-    // 🧭 Optional sorting
-    ads = (sort?.ToLower(), order?.ToLower()) switch
-    {
-        ("price", "asc") => ads.OrderBy(a => a.Price),
-        ("price", "desc") => ads.OrderByDescending(a => a.Price),
-        ("date", "asc") => ads.OrderBy(a => a.CreatedAt),
-        ("date", "desc") => ads.OrderByDescending(a => a.CreatedAt),
-        _ => ads.OrderByDescending(a => a.CreatedAt) // Default sort by newest
-    };
-
-    // 🎯 Map to DTOs *after* filtering/sorting
-    var dtos = ads.Select(ad => new AdvertisementDTO
-    {
-        Id = ad.Id,
-        Title = ad.Title,
-        Description = ad.Description,
-        Price = ad.Price,
-        ImageUrl = ad.ImageUrl,
-        SellerName = ad.Seller.Username,
-        SellerId = ad.Seller.Id,
-        CategoryName = ad.Category.Name ,
-        CreatedAt = ad.CreatedAt,
-    });
-
-    return dtos;
-}
 
     public AdvertisementDTO? GetAdvertisementById(int id)
     {
@@ -61,9 +62,9 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
             Title = ad.Title,
             Description = ad.Description,
             Price = ad.Price,
-            SellerName = ad.Seller.Username,
-            SellerId = ad.Seller.Id,
-            CategoryName = ad.Category.Name,
+            SellerName = ad.Seller?.Username ?? string.Empty,
+            SellerId = ad.Seller?.Id ?? 0,
+            CategoryName = ad.Category?.Name ?? string.Empty,
             CreatedAt = ad.CreatedAt,
             ImageUrl = ad.ImageUrl
         };
@@ -96,7 +97,7 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
     public IEnumerable<AdvertisementDTO> Search(string keyword)
     {
         if (string.IsNullOrWhiteSpace(keyword))
-            return Enumerable.Empty<AdvertisementDTO>();
+            return [];
 
         var results = _repository.GetAll()
             .Where(ad =>

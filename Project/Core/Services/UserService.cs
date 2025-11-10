@@ -1,5 +1,6 @@
-using BlocketChallenge.Models;
-using BlocketClallenge.Repositories;
+using BlocketChallenge.Project.Core.Interfaces;
+using BlocketChallenge.Project.Domain.Models;
+using BlocketClallenge.Project.Data.Interfaces;
 
 namespace BlocketChallenge.Services;
 
