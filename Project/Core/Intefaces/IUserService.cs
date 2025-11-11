@@ -9,6 +9,7 @@ public interface IUserService
     User? GetUserById(int id);
 
     User? GetUserByUsername(string username);
+    User? GetUserByEmail(string email);
     void CreateUser(User user);
     void UpdateUser(User user);
     void DeleteUser(int id);

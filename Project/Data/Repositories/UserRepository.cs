@@ -108,4 +108,27 @@ public class UserRepository(DbConnectionFactory connectionFactory) : BaseReposit
         }
         return null;
     }
+
+    public User? GetUserByEmail(string email)
+    {
+        using var conn = _connectionFactory.CreateConnection();
+        using var cmd = new SqlCommand("SELECT Id, Username, Email, PasswordHash,CreatedAt FROM Users WHERE Email=@Email", conn);
+
+        cmd.Parameters.AddWithValue("@Email", email);
+
+        using var reader = cmd.ExecuteReader();
+
+        if (reader.Read())
+        {
+            return new User
+            {
+                Id = reader.GetInt32(0),
+                Username = reader.GetString(1),
+                Email = reader.GetString(2),
+                PasswordHash = reader.GetString(3),
+                CreatedAt = reader.GetDateTime(4)
+            };
+        }
+        return null;
+    }
 }

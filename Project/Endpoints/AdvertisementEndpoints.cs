@@ -30,44 +30,45 @@ public static class AdvertisementEndpoints
 
         //Create
         group.MapPost("/", [Authorize] (AdvertisementCreateDto dto, IAdvertisementService service, ClaimsPrincipal user) =>
-{
-    try
-    {
-
-        foreach (var claim in user.Claims)
         {
-            Log.Information("Claim type: {ClaimType}, Claim value: {ClaimValue}", claim.Type, claim.Value);
-        }
+            try
+            {
+
+                foreach (var claim in user.Claims)
+                {
+                    Log.Information("Claim type: {ClaimType}, Claim value: {ClaimValue}", claim.Type, claim.Value);
+                }
 
 
-        var userIdClaim = user.GetUserID();
-        if (userIdClaim == null)
-        {
-            Log.Warning("No user ID found in claims.");
-            return Results.Unauthorized();
-        }
-        var ad = new Advertisement
-        {
-            Title = dto.Title,
-            Description = dto.Description,
-            Price = dto.Price,
-            CategoryId = dto.CategoryId,
-            SellerId = userIdClaim.Value,
-            ImageUrl = dto.ImageUrl,
-        };
-        Log.Information($"Creating ad with CategoryId={ad.CategoryId}, SellerId={ad.SellerId}", dto.CategoryId, userIdClaim, dto.ImageUrl);
+                var userIdClaim = user.GetUserID();
+                if (userIdClaim == null)
+                {
+                    Log.Warning("No user ID found in claims.");
+                    return Results.Unauthorized();
+                }
+                var ad = new Advertisement
+                {
+                    Title = dto.Title,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    CategoryId = dto.CategoryId,
+                    SellerId = userIdClaim.Value,
+                    ImageUrl = dto.ImageUrl,
+                };
+                Log.Information($"Creating ad with CategoryId={ad.CategoryId}, SellerId={ad.SellerId}", dto.CategoryId, userIdClaim, dto.ImageUrl);
 
-        service.Create(ad);
+                service.Create(ad);
 
-        Log.Information("Advertisement created successfully: {@Ad}", ad);
-        return Results.Created($"/api/ads/{ad.Id}", ad);
-    }
-    catch (Exception ex)
-    {
-        Log.Error(ex, "Error creating advertisement");
-        return Results.BadRequest(new { error = ex.Message });
-    }
-});
+                Log.Information("Advertisement created successfully: {@Ad}", ad);
+                return Results.Created($"/api/ads/{ad.Id}", ad);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error creating advertisement");
+                return Results.BadRequest(new { error = ex.Message });
+            }
+        });
+        
 
 
         //Protected: Update Endpoint
@@ -131,29 +132,7 @@ public static class AdvertisementEndpoints
             return Results.Ok(results);
         });
 
-        //GetByUser
-        group.MapGet("/my-ads", (IAdvertisementService service, ClaimsPrincipal user) =>
-{
-    try
-    {
-        var userId = user.GetUserID();
-        if (userId is null)
-        {
-            Log.Warning("Unauthorized access attempt to /my-ads");
-            return Results.Unauthorized();
-        }
-
-        var ads = service.GetByUserId(userId.Value);
-
-        Log.Information("Fetched {Count} ads for user {UserId}", ads.Count(), userId);
-        return Results.Ok(ads);
-    }
-    catch (Exception ex)
-    {
-        Log.Error(ex, "Error fetching user's advertisements");
-        return Results.Problem("Failed to fetch advertisements");
-    }
-});
+    
 
     }
 }

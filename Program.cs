@@ -23,24 +23,32 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
-
+Log.Information("Program.cs using key: {Key}", builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        var key = builder.Configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(key))
+            throw new InvalidOperationException("Jwt:Key missing in configuration.");
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
+            ValidateIssuer = false,
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Jwt:Issuer"],
-            ValidAudience = jwtSettings["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key),
 
-             // Optional tweaks
-            ClockSkew = TimeSpan.Zero // Prevents 5-minute grace period default
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey = new SymmetricSecurityKey(
+    Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+),
+            ClockSkew = TimeSpan.Zero
         };
     });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddAuthorization();
 

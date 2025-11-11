@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using BlocketChallenge.Project.Core.Interfaces;
 using BlocketChallenge.Project.Domain.Models;
+using Serilog;
 
 namespace BlocketChallenge.Services;
 
@@ -15,16 +16,12 @@ public class JwtTokenService(IConfiguration config) : IJwtTokenService
     {
         // 1️⃣ Configuration values with proper null checks
         var key = _config["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key missing in configuration.");
-        var issuer = _config["Jwt:Issuer"];
-        var audience = _config["Jwt:Audience"]; // ✅ fix: key name was lowercase 'audience'
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         // 2️⃣ Use safer config parsing for expiry
         var expiresInMinutes = double.TryParse(_config["Jwt:ExpiresInMinutes"], out var minutes) ? minutes : 60;
         var expires = DateTime.UtcNow.AddMinutes(expiresInMinutes);
-
-        // 3️⃣ Create signing credentials
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         // 4️⃣ Add meaningful claims
         var claims = new[]
@@ -37,19 +34,19 @@ public class JwtTokenService(IConfiguration config) : IJwtTokenService
 
         // 5️⃣ Generate token
         var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
-            claims: claims,
-            expires: expires,
-            signingCredentials: credentials
-        );
-
+    issuer: _config["Jwt:Issuer"],
+    audience: _config["Jwt:Audience"],
+    claims: claims,
+    expires: expires,
+    signingCredentials: credentials
+);
+        Log.Information("JwtTokenService using key: {Key}", _config["Jwt:Key"]);
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     public string GenerateRefreshToken(User user)
     {
-        var key = _config["jwt:RefreshKey"];
+        var key = _config["Jwt:RefreshKey"];
         var expires = DateTime.UtcNow.AddDays(double.Parse(_config["Jwt:RefreshExpiresDays"]!));
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!));

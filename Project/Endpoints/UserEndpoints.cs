@@ -2,6 +2,7 @@
 using BlocketChallenge.Project.Core.Interfaces;
 using BlocketChallenge.Project.Domain.DTOs;
 using BlocketChallenge.Project.Domain.Models;
+using Serilog;
 
 namespace BlocketChallenge.Endpoints;
 
@@ -13,7 +14,7 @@ public static class UserEndpoints
 
         var group = routes.MapGroup("/api").WithTags("Users");
 
-        //group.MapGet("/", (IUserService service) => Results.Ok(service.GetAllUsers()));
+        group.MapGet("/", (IUserService service) => Results.Ok(service.GetAllUsers()));
 
         group.MapGet("/users/{username}", (string username, IAdvertisementService service) =>
         {
@@ -51,34 +52,44 @@ public static class UserEndpoints
             {
                 return Results.BadRequest(new { error = ex.Message });
             }
+            catch (InvalidOperationException ex)
+            {
+                return Results.Conflict(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Unexpected error → still return something user-safe
+                Log.Error(ex, "Unexpected error while creating user");
+                return Results.Problem("An unexpected error occurred. Please try again later.");
+            }
         });
 
         group.MapPost("/auth/login", (LoginRequest request, IUserService service, IJwtTokenService jwt, HttpResponse response) =>
-        {
-            var user = service.Authenticate(request.Username, request.Password);
-            if (user is null)
-                return Results.Unauthorized();
+{
+    var user = service.Authenticate(request.Username, request.Password);
+    if (user is null)
+        return Results.Unauthorized(); // 401
 
-            var accessToken = jwt.GenerateAccessToken(user);
-            var refreshToken = jwt.GenerateRefreshToken(user);
+    var accessToken = jwt.GenerateAccessToken(user);
+    var refreshToken = jwt.GenerateRefreshToken(user);
 
-            response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = false, //change for HTTPS
-                SameSite = SameSiteMode.None, //change for HTTPS
-                Expires = DateTime.UtcNow.AddDays(7),
-                Path = "/api/auth/refresh"
-            });
+    response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = false,
+        SameSite = SameSiteMode.None,
+        Expires = DateTime.UtcNow.AddDays(7),
+        Path = "/api/auth/refresh"
+    });
 
-            return Results.Ok(new
-            {
-                Message = "Login successful",
-                Token = accessToken,
-                user.Username,
-                user.Email
-            });
-        });
+    return Results.Ok(new
+    {
+        Message = "Login successful",
+        Token = accessToken,
+        user.Username,
+        user.Email
+    });
+});
 
         group.MapPost("/auth/refresh", (HttpRequest request, IJwtTokenService jwt, IUserService userService) =>
         {
