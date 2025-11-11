@@ -13,7 +13,6 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
     {
         var ads = _repository.GetAll();
 
-        // 🔍 Optional search
         if (!string.IsNullOrWhiteSpace(search))
         {
             ads = ads.Where(ad =>
@@ -24,7 +23,6 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
 
         }
 
-        // 🧭 Optional sorting
         ads = (sort?.ToLower(), order?.ToLower()) switch
         {
             ("price", "asc") => ads.OrderBy(a => a.Price),
@@ -34,7 +32,7 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
             _ => ads.OrderByDescending(a => a.CreatedAt) // Default sort by newest
         };
 
-        // 🎯 Map to DTOs *after* filtering/sorting
+
         var dtos = ads.Select(ad => new AdvertisementDTO
         {
             Id = ad.Id,
