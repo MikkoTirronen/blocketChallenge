@@ -33,9 +33,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(key)
+            ValidIssuer = jwtSettings["Jwt:Issuer"],
+            ValidAudience = jwtSettings["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+
+             // Optional tweaks
+            ClockSkew = TimeSpan.Zero // Prevents 5-minute grace period default
         };
     });
 

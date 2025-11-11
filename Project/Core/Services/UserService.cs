@@ -11,7 +11,7 @@ public class UserService(IUserRepository repository) : IUserService
     public IEnumerable<User> GetAllUsers() => _repository.GetAllUsers();
 
     public User? GetUserById(int id) => _repository.GetUserById(id);
-
+    public User? GetUserByUsername(string username) => _repository.GetUserByUsername(username);
     public void CreateUser(User user)
     {
         if (string.IsNullOrWhiteSpace(user.Username))
@@ -40,24 +40,24 @@ public class UserService(IUserRepository repository) : IUserService
         _repository.DeleteUser(id);
     }
 
-public User? Authenticate(string username, string password)
-{
-    var user = _repository.GetUserByUsername(username);
+    public User? Authenticate(string username, string password)
+    {
+        var user = _repository.GetUserByUsername(username);
 
-    if (user == null)
-        throw new Exception("User not found");
+        if (user == null)
+            throw new Exception("User not found");
 
-    if (string.IsNullOrWhiteSpace(password))
-        throw new Exception("Password cannot be empty");
+        if (string.IsNullOrWhiteSpace(password))
+            throw new Exception("Password cannot be empty");
 
-    if (string.IsNullOrWhiteSpace(user.PasswordHash))
-        throw new Exception("Stored password hash is null");
+        if (string.IsNullOrWhiteSpace(user.PasswordHash))
+            throw new Exception("Stored password hash is null");
 
-    bool verified = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
+        bool verified = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
 
-    if (!verified)
-        throw new Exception("Invalid password");
+        if (!verified)
+            throw new Exception("Invalid password");
 
-    return user;
-}
+        return user;
+    }
 }

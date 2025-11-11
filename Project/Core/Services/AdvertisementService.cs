@@ -128,4 +128,24 @@ public class AdvertisementService(IAdvertisementRepository repository) : IAdvert
     {
         return _repository.GetByUserId(sellerId);
     }
+    public IEnumerable<AdvertisementDTO> GetListingsByUsername(string username)
+    {
+        var listings = _repository.GetAll()
+        .Where(a => a.Seller?.Username == username)  // assuming you store owner's username
+        .OrderByDescending(a => a.CreatedAt)
+        .ToList();
+
+        // 2️⃣ Map to DTO to avoid exposing sensitive fields
+        var dtos = listings.Select(l => new AdvertisementDTO
+        {
+            Id = l.Id,
+            Title = l.Title,
+            Description = l.Description,
+            Price = l.Price,
+            ImageUrl = l.ImageUrl,
+            CreatedAt = l.CreatedAt
+        });
+
+        return dtos;
+    }
 }

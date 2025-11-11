@@ -15,4 +15,6 @@ public interface IAdvertisementService
     IEnumerable<AdvertisementDTO> Search(string keyword);
     IEnumerable<Advertisement> GetByCategory(int categoryId);
     IEnumerable<Advertisement> GetByUserId(int sellerId);
+
+    IEnumerable<AdvertisementDTO> GetListingsByUsername(string username);
 }
